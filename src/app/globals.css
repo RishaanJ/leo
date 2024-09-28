@@ -20,6 +20,14 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+.quick-info-item{
+  transition-duration: .2s;
+}
+
+.quick-info-item:hover{
+  transform: scale(1.03);
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;
