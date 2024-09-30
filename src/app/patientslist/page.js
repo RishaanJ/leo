@@ -6,6 +6,15 @@ import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, getDocs } from 'firebase/firestore';
 import Link from 'next/link'; // Import Link from next/link
 
+const firebaseConfig = {
+  apiKey: process.env.DB_API_KEY,
+  authDomain: process.env.DB_AUTH_DOMAIN,
+  projectId: process.env.DB_PROJECT_ID,
+  storageBucket: process.env.DB_STORAGE_BUCKET,
+  messagingSenderId: process.env.DB_SENDER_ID,
+  appId: process.env.DB_APP_ID
+};
+
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
@@ -32,7 +41,7 @@ export default function PatientsList() {
     const fetchPatients = async () => {
       const patientsCollection = collection(db, 'Patients');
       const patientSnapshot = await getDocs(patientsCollection);
-      const patientList = patientSnapshot.docs.map(doc => doc.data());
+      const patientList = patientSnapshot.docs.map(doc => { return { data: doc.data(), id: doc.id } } );
       setPatients(patientList);
     };
 
@@ -45,19 +54,21 @@ export default function PatientsList() {
         <h2 className="text-2xl font-semibold text-gray-800 mb-6 text-center">Patient List</h2>
 
         {patients.map((patient, index) => (
-          <div
-            key={index}
-            className="flex items-center cursor-pointer justify-between bg-gray-50 p-4 rounded-lg mb-4 hover:bg-gray-100 transition duration-200"
-          >
-            <div className="flex items-center space-x-4">
-              <div className={`${getRandomColor()} h-10 w-10 rounded-full flex items-center justify-center text-white font-semibold`}>
-                {patient.name.charAt(0)} {/* Use the first letter of full_name */}
-              </div>
-              <div>
-                <p className="text-lg font-medium text-gray-700">{patient.name}</p>
+          <a href={`/patient/${patient.id}`}>
+            <div
+              key={index}
+              className="flex items-center cursor-pointer justify-between bg-gray-50 p-4 rounded-lg mb-4 hover:bg-gray-100 transition duration-200"
+            >
+              <div className="flex items-center space-x-4">
+                <div className={`${getRandomColor()} h-10 w-10 rounded-full flex items-center justify-center text-white font-semibold`}>
+                  {patient.data.name.charAt(0)} {/* Use the first letter of full_name */}
+                </div>
+                <div>
+                  <p className="text-lg font-medium text-gray-700">{patient.data.name}</p>
+                </div>
               </div>
             </div>
-          </div>
+          </a>
         ))}
 
         {/* Button to navigate to /newpatient */}

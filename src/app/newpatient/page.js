@@ -8,6 +8,15 @@ import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { getFirestore, collection, addDoc } from "firebase/firestore";
 import Link from 'next/link'; // Import Link from next/link
 
+const firebaseConfig = {
+    apiKey: process.env.DB_API_KEY,
+    authDomain: process.env.DB_AUTH_DOMAIN,
+    projectId: process.env.DB_PROJECT_ID,
+    storageBucket: process.env.DB_STORAGE_BUCKET,
+    messagingSenderId: process.env.DB_SENDER_ID,
+    appId: process.env.DB_APP_ID
+};
+
 const app = initializeApp(firebaseConfig);
 const storage = getStorage(app);
 const db = getFirestore(app);
@@ -27,6 +36,7 @@ export default function NewPatient() {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
+        setResponse("Reading image...");
         if (file) {
             try {
                 const imageUrl = await uploadImage(file);
@@ -50,12 +60,12 @@ export default function NewPatient() {
     };
 
     const callChatGPTAPI = async (imageUrl) => {
-        const openai = new OpenAI({ apiKey: "", dangerouslyAllowBrowser: true });
+        const openai = new OpenAI({ apiKey: process.env.API_KEY, dangerouslyAllowBrowser: true });
 
         const completion = await openai.chat.completions.create({
             model: "gpt-4o-mini",
             messages: [
-                { role: "system", content: "You are a test medical tracking website for senior retirement homes. Your goal is to parse a medical report image into a dictionary format containing fields like date of birth, sex, cognitive status, medications needed, notes, etc. Provide the output as a JSON string without any additional text and do not start it off with code blocks like ```json. Also do not put any nesting dictionaries, just put them all in general EXCEPT FOR MEDICATION, and if there is no name set name to be No name" },
+                { role: "system", content: "You are a test medical tracking website for senior retirement homes. Your goal is to parse a medical report image into a dictionary format containing fields like date of birth, sex, cognitive status, medication, notes, etc. Provide the output as a JSON string without any additional text and do not start it off with code blocks like ```json. Also do not put any nesting dictionaries, just put them all in general EXCEPT FOR MEDICATION (which should be a dictionary not an array), and if there is no name set name to be No name. For medication, list a dosage and instructions, if found." },
                 {
                     role: "user",
                     content: [
@@ -73,8 +83,8 @@ export default function NewPatient() {
     };
 
     return (
-        <div className="flex items-center justify-center min-h-screen bg-gray-100 p-4">
-            <div className="bg-white shadow-md rounded-lg p-6 w-full max-w-md">
+        <div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-700 p-4">
+            <div className="bg-white dark:bg-gray-300 shadow-md rounded-lg p-6 w-full max-w-md">
                 <h2 className="text-2xl font-bold mb-4 text-black text-center">Upload Patient File</h2>
                 <form onSubmit={handleSubmit}>
                     <div className="mb-4">
@@ -86,7 +96,7 @@ export default function NewPatient() {
                             type="file"
                             accept="image/png"
                             onChange={handleFileChange}
-                            className="mt-1 block w-full border border-gray-300 rounded-md p-2 bg-white text-gray-700 placeholder-gray-400 transition duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-300"
+                            className="mt-1 block w-full border border-gray-300 dark:border-gray-700 rounded-md p-2 bg-white dark:bg-gray-300 text-gray-700 placeholder-gray-400 transition duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-300"
                         />
                     </div>
                     <button

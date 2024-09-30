@@ -22,14 +22,14 @@ export default function Inventory() {
         />
         <ul className="space-y-4 w-full text-gray-700">
           <li className="bg-gray-100 dark:bg-gray-300 rounded-lg h-300">
-            <a className="text-2xl cursor-pointer block p-3 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-700 hover:text-gray-100" href="/">Dashboard</a>
+            <a className="text-2xl cursor-pointer block p-3 rounded-lg hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-100 hover:text-gray-700" href="/">Dashboard</a>
           </li>
           <li className="bg-gray-100 dark:bg-gray-300 rounded-lg">
-            <a className="text-2xl cursor-pointer block p-3 rounded-lg bg-gray-300 dark:bg-gray-700 text-gray-100 hover:text-gray-100">Inventory</a>
+            <a className="text-2xl cursor-pointer block p-3 rounded-lg bg-gray-300 dark:bg-gray-300 text-gray-700">Inventory</a>
           </li>
         </ul>
       </div>
-      { //Check if message failed
+      {
         ((OpeningStock + stockIn - stockOut) < 80)
           ? <div className="h-10 w-full text-lg absolute bg-[#EB6464] p-6 flex items-center justify-center"><p>Low supply of Amoxicillin (quantity: { OpeningStock + stockIn - stockOut })</p></div>
           : null
