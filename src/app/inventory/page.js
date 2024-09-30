@@ -2,13 +2,30 @@
 
 // inventory/page.jsx
 import Image from 'next/image';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+
+function usePersistantState(key, initialValue) {
+  const [state, setInternalState] = useState(initialValue);
+
+  useEffect(() => {
+      const value = localStorage.getItem(key);
+      if (!value) return;
+      setInternalState(JSON.parse(value));
+  }, [key]);
+
+  const setState = (value) => {
+      localStorage.setItem(key, JSON.stringify(value));
+      setInternalState(value);
+  };
+
+  return [state, setState];
+}
 
 export default function Inventory() {
-  const [stockIn, setStockIn] = useState(20);
-  const [stockOut, setStockOut] = useState(120);
+  const [stockIn, setStockIn] =  usePersistantState("stockIn", 20);
+  const [stockOut, setStockOut] = usePersistantState("stockOut", 120);
   const OpeningStock = 200;
-  
+
   return (
     <div className="side-navbar flex h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
       <div className="w-1/4 bg-gray-200 dark:bg-gray-800 p-5 flex flex-col items-center">
@@ -49,8 +66,8 @@ export default function Inventory() {
           <p className="w-32">{ stockIn }</p>
           <p className="w-32">{ stockOut }</p>
           <p className="w-32">{ OpeningStock + stockIn - stockOut }</p>
-          <button className="bg-[#7CE458] text-gray-900 w-28" onClick={()=>setStockIn(stockIn => stockIn + 1)}>Stock in</button>
-          <button className="bg-[#EB6464] text-gray-900 w-28" onClick={()=>setStockOut(stockOut => stockOut + 1)}>Stock out</button>
+          <button className="bg-[#7CE458] text-gray-900 w-28" onClick={() => setStockIn(stockIn + 1)}>Stock in</button>
+          <button className="bg-[#EB6464] text-gray-900 w-28" onClick={() => setStockOut(stockOut + 1)}>Stock out</button>
         </div>
         <div className="flex flex-row gap-4 font-medium p-4">
           <p className="w-36">Benzonatate</p>
